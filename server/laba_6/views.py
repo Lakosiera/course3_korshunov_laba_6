@@ -6,7 +6,7 @@ def hello_world(request):
     # простейший вывод html страницы
     return HttpResponse("Hello, world!")
 
-# вьбшка главной страници
+# вьюшка главной страници
 def index(request):
     # передаем данные контекста
     context = {
