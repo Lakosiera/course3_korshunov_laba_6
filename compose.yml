@@ -23,3 +23,14 @@ services: # корневое имя параметра, в котором пер
       - "8006:8000"
     depends_on: # указываем что этот контенера зависит от другого контенера
       - laba-6-db
+
+  laba-6-swagger:
+    container_name: laba-6-swagger
+    image: swaggerapi/swagger-ui:latest
+    volumes:
+      - ./swagger/swagger.yml:/swagger.yml
+      - ./swagger/django-proxy.conf:/etc/nginx/templates/default.conf.template
+    environment:
+      SWAGGER_JSON: /swagger.yml
+    ports:
+      - "8016:8080"

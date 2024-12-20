@@ -7,10 +7,13 @@ from laba_6 import views
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
+router.register(r'customer', views.CustomerViewSet)
+router.register(r'deposit', views.DepositViewSet)
+router.register(r'loan', views.LoanViewSet)
 
 
 # пути для модуля 'laba_6'
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
