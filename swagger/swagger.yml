@@ -1,24 +1,182 @@
 openapi: 3.0.0
 info:
   title: Laba 6 API
-  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  description: |
+    ## CRUD 
+    | Операция   | Описание   | Тип запроса |
+    |------------|------------|-------------|
+    | **C**reate | Создание   | *POST*      |
+    | **R**ead   | Чтение     | *GET*       |
+    | **U**pdate | Обновление | *PATCH*     |
+    | **D**elete | Удаление   | *DELETE*    |
+
   version: 0.0.1
 
-servers:
-  - url: http://localhost:8016/api/
+servers: # сервера для проверки API
+  - url: /api/ # будет обращаться по тому же адресу где запущен swager с добавлением /api/ в путь
     description: Django server Laba 6
 
-paths:
-  /users:
+paths: # все URI для запростов
+  /users/: # http://localhost/api/users/
     get:
-      summary: Returns a list of users.
-      description: Optional extended description in CommonMark or HTML.
+      tags:
+      - Django
+      summary: Вернет список пользователей.
+      description: Это пользователи Django и не относяться к Лабе №6.
       responses:
-        "200": # status code
-          description: A JSON array of user names
+        200: # статус все OK
+          description: Json массив с данными пользователей
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: string
+                  $ref: "#/components/schemas/User" # ссылка на объект
+
+  /customer/:  # http://localhost/api/customer/
+    post: # тип запроса POST
+      tags: # тэг для группировки
+      - Клиенты
+      summary: Создаст клиента
+      description: Создаст клиента
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      requestBody: # тело запроса
+        description:  Даннвми нового клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+      responses:
+        201: # создано успешно
+          description: Клиент создан успешно
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных 
+                $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+        400: # создание не удалось
+          description: Создание не удалось
+
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Клиенты
+      summary: Вернет список клиентов
+      description: Вернет JSON список всех клиентов
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      responses:
+        200: # успешно
+          description: JSON список клиентов
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                type: array # тип массив
+                items: # элемент массива
+                  $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+        
+        401: # неавторизован
+          description: Нет авторизации
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+                $ref: "#/components/schemas/401" # ссылка на структуру типа 401
+
+  /customer/{id}/: # http://localhost/api/customer/1/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Клиенты
+      summary: Вернет клиента по id
+      description: Операция чтения
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200: # status code
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer" # ссылка на объект
+    patch:
+      tags:
+      - Клиенты
+      summary: Обновить данные клиента по id.
+      description: Операция обновления.
+      security:
+        - BasicAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Optional description in *Markdown*
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Customer"
+      responses:
+        200: # status code
+          description: A JSON array of user names
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer" # ссылка на объект
+
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        is_staff:
+          type: boolean
+      example: # Sample data
+        username: Jessica Right
+        email: lakosiera@mail.ru
+        is_staff: true
+    Customer:
+      type: object
+      properties:
+        # id:
+        #   type: integer
+        first_name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+      example: # Sample data
+        first_name: Правильный Бобер
+        email: lakosiera@mail.ru
+        address: Солнечный бульвар
+
+    401:
+      type: object
+      properties:
+        detail:
+          type: string
+      example:
+        detail: Нет авторизации
