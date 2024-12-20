@@ -29,9 +29,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
 class DepositViewSet(viewsets.ModelViewSet):
     queryset = Deposit.objects.all()
     serializer_class = DepositSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LoanViewSet(viewsets.ModelViewSet):
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
+    permission_classes = [permissions.IsAuthenticated]
 

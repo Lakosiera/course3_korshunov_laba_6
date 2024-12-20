@@ -20,7 +20,7 @@ class CustomerSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = ['deposits', 'loans', 'id', 'first_name', 'email', 'address']
         read_only_fields = ['id']
 
 

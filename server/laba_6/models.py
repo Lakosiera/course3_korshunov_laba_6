@@ -21,7 +21,8 @@ class Customer(models.Model):
 
 class Deposit(models.Model):
     customer = models.ForeignKey(
-        Customer,
+        to=Customer,
+        related_name='deposits',
         on_delete=models.CASCADE,
     )
     amount = models.IntegerField(
@@ -32,7 +33,8 @@ class Deposit(models.Model):
 
 class Loan(models.Model):
     customer = models.ForeignKey(
-        Customer,
+        to=Customer,
+        related_name='loans',
         on_delete=models.CASCADE,
     )
     amount = models.IntegerField(
