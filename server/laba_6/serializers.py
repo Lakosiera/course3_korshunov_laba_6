@@ -17,19 +17,23 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CustomerSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.ReadOnlyField()
     class Meta:
         model = Customer
-        fields = ['first_name', 'email', 'address']
+        fields = '__all__'
+        read_only_fields = ['id']
 
 
 class DepositSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Deposit
-        fields = ['id', 'customer', 'amount']
+        fields = '__all__'
+        read_only_fields = ['id']
 
 
 class LoanSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Loan
-        fields = ['id', 'customer', 'amount', 'purpose', 'submitted_on', 'disbursement_on']
+        fields = '__all__'
+        read_only_fields = ['id']
 

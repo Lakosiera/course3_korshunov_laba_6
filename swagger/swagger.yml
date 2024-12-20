@@ -17,22 +17,6 @@ servers: # сервера для проверки API
     description: Django server Laba 6
 
 paths: # все URI для запростов
-  /users/: # http://localhost/api/users/
-    get:
-      tags:
-      - Django
-      summary: Вернет список пользователей.
-      description: Это пользователи Django и не относяться к Лабе №6.
-      responses:
-        200: # статус все OK
-          description: Json массив с данными пользователей
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User" # ссылка на объект
-
   /customer/:  # http://localhost/api/customer/
     post: # тип запроса POST
       tags: # тэг для группировки
@@ -42,7 +26,7 @@ paths: # все URI для запростов
       security: # указываем что запрос требует авторизации
         - BasicAuth: [] # тип авторизации
       requestBody: # тело запроса
-        description:  Даннвми нового клиента в *JSON* формате
+        description:  Данные нового клиента в *JSON* формате
         required: true # поле обязательно
         content: # контекст передаваемых данных
           application/json: # тип передаваемых данных
@@ -61,7 +45,7 @@ paths: # все URI для запростов
     get: # тип запроса GET
       tags: # тэг для группировки
       - Клиенты
-      summary: Вернет список клиентов
+      summary: Операция чтения список клиентов
       description: Вернет JSON список всех клиентов
       security: # указываем что запрос требует авторизации
         - BasicAuth: [] # тип авторизации
@@ -79,104 +63,113 @@ paths: # все URI для запростов
           description: Нет авторизации
           content: # контекст ответа
             application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
                 $ref: "#/components/schemas/401" # ссылка на структуру типа 401
 
   /customer/{id}/: # http://localhost/api/customer/1/
     get: # тип запроса GET
       tags: # тэг для группировки
       - Клиенты
-      summary: Вернет клиента по id
-      description: Операция чтения
-      security:
-        - BasicAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User ID
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        200: # status code
-          description: A JSON array of user names
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Customer" # ссылка на объект
-    patch:
-      tags:
+      summary: Операция чтения данных одного клиента
+      description: Вернет JSON клиента по id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с данными клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+    
+    patch: # тип запроса PATCH
+      tags: # тэг для группировки
       - Клиенты
-      summary: Обновить данные клиента по id.
-      description: Операция обновления.
-      security:
-        - BasicAuth: []
-      parameters:
-        - name: id
-          in: path
-          description: User ID
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: Optional description in *Markdown*
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Customer"
+      summary: Операция обновления данные клиента
+      description: Обновить указаные поля в JSON данных клиента по id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      requestBody: # тело запроса
+        description:  Данные с полями для обновления клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с обновленными данными клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+    
+    delete: # тип запроса DELETE
+      tags: # тэг для группировки
+      - Клиенты
+      summary: Операция удалит клиента
+      description: Удалит клиента по id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
       responses:
-        200: # status code
-          description: A JSON array of user names
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Customer" # ссылка на объект
+        204: # все успешно
+          description: Клиент удален
 
+  
 
+# компоненты для более простого форматировани файла
 components:
+  # схемы авторизаций
   securitySchemes:
-    BasicAuth:
+    BasicAuth: # базовая авторизация
       type: http
       scheme: basic
 
-  schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        username:
-          type: string
-        email:
-          type: string
-        is_staff:
-          type: boolean
-      example: # Sample data
-        username: Jessica Right
-        email: lakosiera@mail.ru
-        is_staff: true
-    Customer:
-      type: object
-      properties:
-        # id:
-        #   type: integer
-        first_name:
-          type: string
-        email:
-          type: string
-        address:
-          type: string
-      example: # Sample data
+  schemas: # структуры данных объектов
+    Customer: # Клинет
+      type: object # тип данных объект (словарь) 
+      properties: # свойста
+        id:  # идентификатор
+          type: integer # тип число
+        first_name: # имя
+          type: string # тип строка
+        email: # почта
+          type: string # тип строка
+        address: # адресс
+          type: string # тип строка
+      example: # пример данных
         first_name: Правильный Бобер
         email: lakosiera@mail.ru
         address: Солнечный бульвар
 
-    401:
-      type: object
-      properties:
-        detail:
-          type: string
-      example:
+    401: # не авторизован
+      type: object # тип данных объект (словарь) 
+      properties: # свойста
+        detail: # детали
+          type: string # тип строка
+      example: # пример данных
         detail: Нет авторизации
