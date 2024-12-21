@@ -1,37 +1,26 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import Customer, Deposit, Loan
 
 
-# Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'is_staff']
 
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['url', 'name']
-
-
-class CustomerSerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
+class CustomerSerializer(serializers.ModelSerializer):
+    # deposits = serializers.PrimaryKeyRelatedField(many=True, queryset=Deposit.objects.all())
+    # loans = serializers.PrimaryKeyRelatedField(many=True, queryset=Loan.objects.all())
     class Meta:
         model = Customer
-        fields = ['deposits', 'loans', 'id', 'first_name', 'email', 'address']
+        fields = ['id', 'first_name', 'email', 'address', 'deposits', 'loans']
         read_only_fields = ['id']
 
 
-class DepositSerializer(serializers.HyperlinkedModelSerializer):
+class DepositSerializer(serializers.ModelSerializer):
+    customer = serializers.ReadOnlyField(source='customer.customer')
     class Meta:
         model = Deposit
         fields = '__all__'
         read_only_fields = ['id']
 
 
-class LoanSerializer(serializers.HyperlinkedModelSerializer):
+class LoanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Loan
         fields = '__all__'

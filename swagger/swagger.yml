@@ -18,6 +18,30 @@ servers: # сервера для проверки API
 
 paths: # все URI для запростов
   /customer/:  # http://localhost/api/customer/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Клиенты
+      summary: Операция чтения список клиентов
+      description: Вернет JSON список всех клиентов
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      responses:
+        200: # успешно
+          description: JSON список клиентов
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                type: array # тип массив
+                items: # элемент массива
+                  $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
+        
+        401: # неавторизован
+          description: Нет авторизации
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Error" # ссылка на структуру типа Error
+
     post: # тип запроса POST
       tags: # тэг для группировки
       - Клиенты
@@ -41,30 +65,6 @@ paths: # все URI для запростов
                 $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
         400: # создание не удалось
           description: Создание не удалось
-
-    get: # тип запроса GET
-      tags: # тэг для группировки
-      - Клиенты
-      summary: Операция чтения список клиентов
-      description: Вернет JSON список всех клиентов
-      security: # указываем что запрос требует авторизации
-        - BasicAuth: [] # тип авторизации
-      responses:
-        200: # успешно
-          description: JSON список клиентов
-          content: # контекст ответа
-            application/json: # тип передаваемых данных
-              schema: # схема / структура передаваемых данных
-                type: array # тип массив
-                items: # элемент массива
-                  $ref: "#/components/schemas/Customer" # ссылка на структуру типа Customer
-        
-        401: # неавторизован
-          description: Нет авторизации
-          content: # контекст ответа
-            application/json: # тип передаваемых данных
-              schema: # схема / структура передаваемых данных
-                $ref: "#/components/schemas/401" # ссылка на структуру типа 401
 
   /customer/{id}/: # http://localhost/api/customer/1/
     get: # тип запроса GET
@@ -140,7 +140,165 @@ paths: # все URI для запростов
           description: Клиент удален
 
 
+  /customer/{customer_id}/deposit/:  # http://localhost/api/customer/1/deposit/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Вклады
+      summary: Операция чтения список клиентов
+      description: Вернет JSON список всех клиентов
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses:
+        200: # успешно
+          description: JSON список вкладов
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                type: array # тип массив
+                items: # элемент массива
+                  $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+        
+        401: # неавторизован
+          description: Нет авторизации
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Error" # ссылка на структуру типа Error
 
+    post: # тип запроса POST
+      tags: # тэг для группировки
+      - Вклады
+      summary: Создаст клиента
+      description: Создаст клиента
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      requestBody: # тело запроса
+        description:  Данные нового клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+      responses:
+        201: # создано успешно
+          description: Клиент создан успешно
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных 
+                $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+        400: # создание не удалось
+          description: Создание не удалось
+
+  /customer/{customer_id}/deposit/{id}/: # http://localhost/api/customer/1/deposit/2/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Вклады
+      summary: Операция чтения данных одного вклада для клиента
+      description: Вернет JSON вклада по id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор вклада
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с данными вклада клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+    
+    patch: # тип запроса PATCH
+      tags: # тэг для группировки
+      - Вклады
+      summary: Операция обновления данные вклада клиента
+      description: Обновить указаные поля в JSON данных вклада клиента по id и customer_id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор вклада
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      requestBody: # тело запроса
+        description:  Данные с полями для обновления клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с обновленными данными клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
+    
+    delete: # тип запроса DELETE
+      tags: # тэг для группировки
+      - Вклады
+      summary: Операция удалит вклад клиента
+      description: Удалит вклад клиента по id и customer_id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор вклада
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses:
+        204: # все успешно
+          description: Вклад удален
+    
 # компоненты для более простого форматировани файла
 components:
   # схемы авторизаций
@@ -161,22 +319,32 @@ components:
           type: string # тип строка
         address: # адресс
           type: string # тип строка
+        deposits: # вклады
+          type: array # тип массив
+          items: # элемент массива
+            type: string # тип строка
+        loans: # займы
+          type: array # тип массив
+          items: # элемент массива
+            type: string # тип строка
       example: # пример данных
         first_name: Правильный Бобер
         email: lakosiera@mail.ru
         address: Солнечный бульвар
+        deposits: []
+        loans: []
 
     Deposit: # Вклад
       type: object # тип данных объект (словарь) 
       properties: # свойста
         id:  # идентификатор вклада
           type: integer # тип число
-        customer: # клиент которому принадлежит вклад
-          type: integer # тип число
+        # customer: # клиент которому принадлежит вклад
+        #   type: integer # тип число
         amount: # сумма
           type: integer # тип число
       example: # пример данных
-        customer: 1
+        # customer: 1
         amount: 10000
 
     Loan: # Кредит
@@ -184,8 +352,8 @@ components:
       properties: # свойста
         id:  # идентификатор вклада
           type: integer # тип число
-        customer: # клиент которому принадлежит кредит
-          type: integer # тип число
+        # customer: # клиент которому принадлежит кредит
+        #   type: integer # тип число
         amount: # сумма
           type: integer # тип число
         purpose: # цель кредита
@@ -202,10 +370,10 @@ components:
         disbursement_on:
 
 
-    401: # не авторизован
+    Error: # ошибка
       type: object # тип данных объект (словарь) 
       properties: # свойста
         detail: # детали
           type: string # тип строка
       example: # пример данных
-        detail: Нет авторизации
+        detail: Not found.
