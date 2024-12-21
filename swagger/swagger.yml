@@ -7,16 +7,17 @@ info:
     |------------|------------|-------------|
     | **C**reate | Создание   | *POST*      |
     | **R**ead   | Чтение     | *GET*       |
-    | **U**pdate | Обновление | *PATCH*     |
+    | **U**pdate | Обновление (частичное, указывать все поля необязательно) | *PATCH*     |
     | **D**elete | Удаление   | *DELETE*    |
 
   version: 0.0.1
 
 servers: # сервера для проверки API
   - url: /api/ # будет обращаться по тому же адресу где запущен swager с добавлением /api/ в путь
-    description: Django server Laba 6
+    description: Django сервер для Лабы №6
 
 paths: # все URI для запростов
+# клиенты
   /customer/:  # http://localhost/api/customer/
     get: # тип запроса GET
       tags: # тэг для группировки
@@ -139,13 +140,13 @@ paths: # все URI для запростов
         204: # все успешно
           description: Клиент удален
 
-
+# вклады
   /customer/{customer_id}/deposit/:  # http://localhost/api/customer/1/deposit/
     get: # тип запроса GET
       tags: # тэг для группировки
       - Вклады
-      summary: Операция чтения список клиентов
-      description: Вернет JSON список всех клиентов
+      summary: Операция чтения список вкладов клиента
+      description: Вернет JSON список всех вкладов клиента
       security: # указываем что запрос требует авторизации
         - BasicAuth: [] # тип авторизации
       parameters: # параметры запроса
@@ -176,8 +177,8 @@ paths: # все URI для запростов
     post: # тип запроса POST
       tags: # тэг для группировки
       - Вклады
-      summary: Создаст клиента
-      description: Создаст клиента
+      summary: Создаст вклад клиента
+      description: Создаст вклад клиента
       security: # указываем что запрос требует авторизации
         - BasicAuth: [] # тип авторизации
       parameters: # параметры запроса
@@ -189,7 +190,7 @@ paths: # все URI для запростов
             type: integer # тип целое число
             format: int64 # формат 64 битный int
       requestBody: # тело запроса
-        description:  Данные нового клиента в *JSON* формате
+        description:  Данные нового вклада клиента в *JSON* формате
         required: true # поле обязательно
         content: # контекст передаваемых данных
           application/json: # тип передаваемых данных
@@ -197,7 +198,7 @@ paths: # все URI для запростов
               $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
       responses:
         201: # создано успешно
-          description: Клиент создан успешно
+          description: Вклад создан успешно
           content: # контекст ответа
             application/json: # тип передаваемых данных
               schema: # схема / структура передаваемых данных 
@@ -267,7 +268,7 @@ paths: # все URI для запростов
               $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
       responses: # ответ
         200: # все успешно
-          description: JSON объект с обновленными данными клиента
+          description: JSON объект с обновленными данными вклада клиента
           content: # контекст ответа
             application/json: # тип передаваемых данных
               schema: # схема / структура передаваемых данных
@@ -299,6 +300,169 @@ paths: # все URI для запростов
         204: # все успешно
           description: Вклад удален
     
+
+# займы
+  /customer/{customer_id}/loan/:  # http://localhost/api/customer/1/loan/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Займы
+      summary: Операция чтения список займов клиента
+      description: Вернет JSON список всех займов клиента
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses:
+        200: # успешно
+          description: JSON список займов клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                type: array # тип массив
+                items: # элемент массива
+                  $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+        
+        401: # неавторизован
+          description: Нет авторизации
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Error" # ссылка на структуру типа Error
+
+    post: # тип запроса POST
+      tags: # тэг для группировки
+      - Займы
+      summary: Создаст займ клиента
+      description: Создаст займ клиента
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      requestBody: # тело запроса
+        description:  Данные нового займа клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+      responses:
+        201: # создано успешно
+          description: Займ создан успешно
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных 
+                $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+        400: # создание не удалось
+          description: Создание не удалось
+
+  /customer/{customer_id}/loan/{id}/: # http://localhost/api/customer/1/loan/2/
+    get: # тип запроса GET
+      tags: # тэг для группировки
+      - Займы
+      summary: Операция чтения данных одного займа для клиента
+      description: Вернет JSON займа по id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор займа
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с данными займа клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+    
+    patch: # тип запроса PATCH
+      tags: # тэг для группировки
+      - Займы
+      summary: Операция обновления данные займа клиента
+      description: Обновить указаные поля в JSON данных займа клиента по id и customer_id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор займа
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      requestBody: # тело запроса
+        description:  Данные с полями для обновления клиента в *JSON* формате
+        required: true # поле обязательно
+        content: # контекст передаваемых данных
+          application/json: # тип передаваемых данных
+            schema: # схема / структура передаваемых данных 
+              $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+      responses: # ответ
+        200: # все успешно
+          description: JSON объект с обновленными данными займа клиента
+          content: # контекст ответа
+            application/json: # тип передаваемых данных
+              schema: # схема / структура передаваемых данных
+                $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
+    
+    delete: # тип запроса DELETE
+      tags: # тэг для группировки
+      - Займы
+      summary: Операция удалит займ клиента
+      description: Удалит вклад клиента по id и customer_id
+      security: # указываем что запрос требует авторизации
+        - BasicAuth: [] # тип авторизации
+      parameters: # параметры запроса
+        - name: customer_id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор клиента
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+        - name: id # имя параметра
+          in: path # параметр часть URL
+          description: Идентификатор займа
+          required: true # обязательный параметр
+          schema: # схема параметра
+            type: integer # тип целое число
+            format: int64 # формат 64 битный int
+      responses:
+        204: # все успешно
+          description: Вклад удален
+    
+
+
 # компоненты для более простого форматировани файла
 components:
   # схемы авторизаций
@@ -309,6 +473,7 @@ components:
 
   schemas: # структуры данных объектов
     Customer: # Клинет
+      description: Структура данных объекта Клиент
       type: object # тип данных объект (словарь) 
       properties: # свойста
         id:  # идентификатор
@@ -320,13 +485,15 @@ components:
         address: # адресс
           type: string # тип строка
         deposits: # вклады
+          description: Депозит могут бытьдобавлены только после создания клиента
           type: array # тип массив
           items: # элемент массива
-            type: string # тип строка
+            $ref: "#/components/schemas/Deposit" # ссылка на структуру типа Deposit
         loans: # займы
+          description: Займы могут бытьдобавлены только после создания клиента
           type: array # тип массив
           items: # элемент массива
-            type: string # тип строка
+            $ref: "#/components/schemas/Loan" # ссылка на структуру типа Loan
       example: # пример данных
         first_name: Правильный Бобер
         email: lakosiera@mail.ru
@@ -335,25 +502,22 @@ components:
         loans: []
 
     Deposit: # Вклад
+      description: Структура данных объекта Вклад
       type: object # тип данных объект (словарь) 
       properties: # свойста
         id:  # идентификатор вклада
           type: integer # тип число
-        # customer: # клиент которому принадлежит вклад
-        #   type: integer # тип число
         amount: # сумма
           type: integer # тип число
       example: # пример данных
-        # customer: 1
         amount: 10000
 
     Loan: # Кредит
+      description: Структура данных объекта Кредит
       type: object # тип данных объект (словарь) 
       properties: # свойста
         id:  # идентификатор вклада
           type: integer # тип число
-        # customer: # клиент которому принадлежит кредит
-        #   type: integer # тип число
         amount: # сумма
           type: integer # тип число
         purpose: # цель кредита
@@ -363,11 +527,10 @@ components:
         disbursement_on: # дата планироваемого погашения кредита
           type: string # тип строка
       example: # пример данных
-        customer: 1
         amount: 1000
         purpose: Кутить
-        submitted_on:
-        disbursement_on:
+        submitted_on: "2024-12-21"
+        disbursement_on: "2025-01-01"
 
 
     Error: # ошибка

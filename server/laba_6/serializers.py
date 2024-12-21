@@ -2,27 +2,37 @@ from rest_framework import serializers
 from .models import Customer, Deposit, Loan
 
 
-
-class CustomerSerializer(serializers.ModelSerializer):
-    # deposits = serializers.PrimaryKeyRelatedField(many=True, queryset=Deposit.objects.all())
-    # loans = serializers.PrimaryKeyRelatedField(many=True, queryset=Loan.objects.all())
-    class Meta:
-        model = Customer
-        fields = ['id', 'first_name', 'email', 'address', 'deposits', 'loans']
-        read_only_fields = ['id']
-
-
+# сериализатор модели
 class DepositSerializer(serializers.ModelSerializer):
-    customer = serializers.ReadOnlyField(source='customer.customer')
     class Meta:
+        # модель
         model = Deposit
-        fields = '__all__'
-        read_only_fields = ['id']
+        # поля для сериализации
+        fields = ["id", "amount"]
+        # поле только для чтения
+        read_only_fields = ["id"]
 
 
+# сериализатор модели
 class LoanSerializer(serializers.ModelSerializer):
     class Meta:
+        # модель
         model = Loan
-        fields = '__all__'
-        read_only_fields = ['id']
+        # поля для сериализации
+        fields = ["id", "amount", "purpose", "submitted_on", "disbursement_on"]
+        # поле только для чтения
+        read_only_fields = ["id"]
 
+
+# сериализатор модели
+class CustomerSerializer(serializers.ModelSerializer):
+    deposits = DepositSerializer(many=True, read_only=True)
+    loans = LoanSerializer(many=True, read_only=True)
+
+    class Meta:
+        # модель
+        model = Customer
+        # поля для сериализации
+        fields = ["id", "first_name", "email", "address", "deposits", "loans"]
+        # поле только для чтения
+        read_only_fields = ["id"]
