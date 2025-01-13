@@ -26,7 +26,7 @@ class LoanSerializer(serializers.ModelSerializer):
 
 # сериализатор модели
 class CustomerSerializer(serializers.ModelSerializer):
-    # отображаем данные из связанной таблицы
+    # отображаем данные из связанной таблицы как объекты
     # присоединяем в поле вклады все связанные данные
     deposits = DepositSerializer(
         many=True,  # как массив
